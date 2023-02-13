@@ -1,34 +1,12 @@
-// import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
-
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { IsEmail, Length } from 'class-validator';
-import {
-  Entity,
-  BaseEntity,
-  Index,
-  Column,
-  OneToMany,
-  BeforeInsert,
-} from 'typeorm';
+import { Entity, Index, Column, OneToMany, BeforeInsert } from 'typeorm';
+import BaseEntity from './Entity';
 
 import bcrypt from 'bcryptjs';
+import Post from './Post';
+import Vote from './Vote';
 
-// @Entity()
-// export class User {
-
-//     @PrimaryGeneratedColumn()
-//     id: number
-
-//     @Column()
-//     firstName: string
-
-//     @Column()
-//     lastName: string
-
-//     @Column()
-//     age: number
-
-// }
 @Entity('users')
 export default class User extends BaseEntity {
   @Index()
@@ -41,6 +19,14 @@ export default class User extends BaseEntity {
   @Column({ unique: true })
   username: string;
 
+  @Index()
+  @Column()
+  firstname: string;
+
+  @Index()
+  @Column()
+  lastname: string;
+
   @Exclude()
   @Column()
   @Length(6, 25, { message: 'Password must be between 6 to 25 characters' })
@@ -50,10 +36,15 @@ export default class User extends BaseEntity {
   posts: Post[];
 
   @OneToMany(() => Vote, (vote) => vote.user)
-  votes: vote[];
+  votes: Vote[];
 
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 6);
+  }
+
+  @Expose()
+  get name() {
+    return this.firstname + ' ' + this.lastname;
   }
 }
