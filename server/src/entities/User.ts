@@ -10,7 +10,6 @@ import Vote from './Vote';
 @Entity('users')
 export default class User extends BaseEntity {
   @Index()
-  @IsEmail(undefined, { message: 'Not a email form' })
   @Column({ unique: true })
   email: string;
 
@@ -20,11 +19,11 @@ export default class User extends BaseEntity {
   username: string;
 
   @Index()
-  @Column()
+  @Column({ nullable: true })
   firstname: string;
 
   @Index()
-  @Column()
+  @Column({ nullable: true })
   lastname: string;
 
   @Exclude()
